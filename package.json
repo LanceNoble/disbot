@@ -1,0 +1,19 @@
+{
+  "name": "disbot",
+  "version": "1.0.0",
+  "description": "tools that make it easier to make a discord bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LanceNoble/disbot.git"
+  },
+  "author": "Lance Noble",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LanceNoble/disbot/issues"
+  },
+  "homepage": "https://github.com/LanceNoble/disbot#readme"
+}
