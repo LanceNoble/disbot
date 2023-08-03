@@ -40,23 +40,21 @@ export class Messenger {
     connect() {
         this.#ws = new WebSocket(this.#wssURL)
         this.#ws.addEventListener('error', (event) => { console.log(`gate error: ${event}`) })
-        this.#ws.addEventListener('open', (event) => {
-            console.log(`gate opened: ${event}`)
-            if (this.#ws.url === this.#wssURL) {
-                this.#reset()
-                return
-            }
-            this.#sendPayload(6)
+        this.#ws.addEventListener('open', () => {
+            console.log(`gate open`)
+            if (this.#ws.url === this.#wssURL) this.#reset()
+            else this.#sendPayload(6)
         }, { once: true })
         this.#ws.addEventListener('message', (event) => {
             const payload = JSON.parse(event.data)
-            console.log('gate message', payload)
+            console.log(`gate message: ${payload.op}\n`)
+            payload.t ? console.log(`event name: ${payload.t}`) : () => { }
             this.#sequence = payload.s
             if (payload.op === 10) {
                 this.#heartbeatInterval = payload.d.heartbeat_interval
                 setTimeout(() => {
                     this.#beat()
-                    setInterval(() => {this.#beat()}, this.#heartbeatInterval)
+                    setInterval(() => { this.#beat() }, this.#heartbeatInterval)
                 }, this.#heartbeatInterval * Math.random())
             }
             else if (payload.op === 11) {

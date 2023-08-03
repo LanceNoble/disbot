@@ -30,7 +30,7 @@ export class Bot {
      * The bot doesn't have to be connected to the gateway,
      * but it must be in the guild that it's sending a text to
      * with appropriate permissions (e.g. can Send Messages).
-     * @param {int} channelID the id of the channel to send the text to
+     * @param {string} channelID the id of the channel to send the text to
      * @param {string} msg what you want the bot to say
      */
     chat(channelID, msg) {
@@ -56,7 +56,7 @@ export class Bot {
         }
         options.headers = headers
         const res = await fetch(`https://discord.com/api/v10/${end}`, options)
-        console.log(res)
+        console.log(`${res.status}: ${res.statusText}`)
         const resJSON = await res.json()
         return resJSON
     }
