@@ -5,13 +5,26 @@ import fetch from "node-fetch"
  */
 export class Bot {
     #token
-    #id
-    #intents
-    constructor(token, id, intents) {
+
+    /**
+     * Creates a new instance of Bot
+     * @param {string} token bot token found on your Discord application's page
+     */
+    constructor(token) {
         this.#token = token
-        this.#id = id
-        this.#intents = intents
     }
+
+    /**
+     * obtain gateway url
+     * user should await this
+     * @returns gateway url
+     */
+    async obtainGatewayURL() {
+        let url = await this.#request('gateway/bot')
+        url = url.url
+        return url
+    }
+
     /**
      * Make the bot send a text to a channel (NOT A DM).
      * The bot doesn't have to be connected to the gateway,
@@ -23,6 +36,14 @@ export class Bot {
     chat(channelID, msg) {
         this.#request(`channels/${channelID}/messages`, 'POST', {content: msg});
     }
+
+    /**
+     * A private helper function for making Discord API requests
+     * @param {string} end 
+     * @param {string} method 
+     * @param {object} body 
+     * @returns A promise that resolves to an object
+     */
     async #request(end, method = 'GET', body = undefined) {
         const options = { method: method }
         const headers = {
