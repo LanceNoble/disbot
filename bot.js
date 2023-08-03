@@ -1,26 +1,30 @@
 import fetch from "node-fetch"
 
 /**
- * Makes requests to Discord API
+ * @author Lance Noble
  */
 export class Bot {
     #token
 
     /**
-     * Creates a new instance of Bot
-     * @param {string} token bot token found on your Discord application's page
+     * Creates a new Bot
+     * @param {String} token Bot Token
+     * @class 
+     * @classdesc Makes requests to Discord's API
      */
     constructor(token) {
         this.#token = token
     }
 
     /**
-     * obtain gateway url
-     * user should await this
-     * @returns gateway url
+     * Request a Gateway URL from Discord's API
+     * @async Should be awaited
+     * @public 
+     * @method GetGateURL
+     * @returns {Promise<String>} Gateway URL
      */
-    async obtainGatewayURL() {
-        let url = await this.#request('gateway/bot')
+    async GetGateURL() {
+        let url = await this.#Request('gateway/bot')
         url = url.url
         return url
     }
@@ -30,21 +34,24 @@ export class Bot {
      * The bot doesn't have to be connected to the gateway,
      * but it must be in the guild that it's sending a text to
      * with appropriate permissions (e.g. can Send Messages).
-     * @param {string} channelID the id of the channel to send the text to
-     * @param {string} msg what you want the bot to say
+     * @param {String} channelID the id of the channel to send the text to
+     * @param {String} msg what you want the bot to say
      */
     chat(channelID, msg) {
-        this.#request(`channels/${channelID}/messages`, 'POST', {content: msg});
+        this.#Request(`channels/${channelID}/messages`, 'POST', {content: msg});
     }
 
     /**
-     * A private helper function for making Discord API requests
-     * @param {string} end 
-     * @param {string} method 
-     * @param {object} body 
-     * @returns A promise that resolves to an object
+     * Makes requests to Discord's API
+     * @async Should be awaited
+     * @private Only accessible within this class
+     * @method Request
+     * @param {String} end The endpoint of the requested resource
+     * @param {String} method The request's method
+     * @param {Object} body The request's body
+     * @returns {Promise<Object>} The response's body
      */
-    async #request(end, method = 'GET', body = undefined) {
+    async #Request(end, method = 'GET', body = null) {
         const options = { method: method }
         const headers = {
             'Authorization': `Bot ${this.#token}`,
