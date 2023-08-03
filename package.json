@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/LanceNoble/disbot/issues"
   },
-  "homepage": "https://github.com/LanceNoble/disbot#readme"
+  "homepage": "https://github.com/LanceNoble/disbot#readme",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
 }
