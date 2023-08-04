@@ -30,14 +30,13 @@ export class Bot {
     }
 
     /**
-     * Make the bot send a text to a channel (NOT A DM).
-     * The bot doesn't have to be connected to the gateway,
-     * but it must be in the guild that it's sending a text to
-     * with appropriate permissions (e.g. can Send Messages).
+     * Command Bot to send a channel text
+     * @public Accessible outside class
+     * @method Chat
      * @param {String} channelID the id of the channel to send the text to
      * @param {String} msg what you want the bot to say
      */
-    chat(channelID, msg) {
+    Chat(channelID, msg) {
         this.#Request(`channels/${channelID}/messages`, 'POST', {content: msg});
     }
 

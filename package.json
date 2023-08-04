@@ -20,5 +20,8 @@
   "dependencies": {
     "node-fetch": "^3.3.2",
     "ws": "^8.13.0"
+  },
+  "devDependencies": {
+    "dotenv": "^16.3.1"
   }
 }
