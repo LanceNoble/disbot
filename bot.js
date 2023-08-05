@@ -10,7 +10,7 @@ export class Bot {
      * Creates a new Bot
      * @param {String} token Bot Token
      * @class 
-     * @classdesc Makes requests to Discord's API
+     * @classdesc Makes Discord API requests
      */
     constructor(token) {
         this.#token = token

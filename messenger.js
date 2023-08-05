@@ -7,52 +7,53 @@ const DEATH = 'death'
 const EVENT = 'event'
 
 /**
- * Notifies user about discord server events in real time
+ * @author Lance Noble
  */
 export class Messenger {
-    #eventEmitter = new EventEmitter()
-    #privateEmitter = new EventEmitter()
+    #guildEvents = new EventEmitter()
+    #wsEvents = new EventEmitter()
 
-    #wssURL
+    #url
     #token
     #intents
-    #appID
+    #id
 
     #s = null
     #session_id = null
     #resume_gateway_url = null
     #heartbeat_interval = null
-
-    #cycle = 0
     #timer = null
+    #cycle = 0
 
     #ws
 
     /**
-     * Creates a new instance of Messenger
-     * @param {string} url gateway url
-     * @param {string} token bot token
-     * @param {int} intents gateway intents
-     * @param {string} appID app id
+     * Creates a new Messenger
+     * @param {String} url Gateway URL
+     * @param {String} token Bot Token
+     * @param {Int} intents Bitwise Gateway Intents
+     * @param {String} id App ID
+     * @class 
+     * @classdesc Relays guild events
      */
-    constructor(url, token, intents, appID) {
-        this.#wssURL = url
+    constructor(url, token, intents, id) {
+        this.#url = url
         this.#token = token
         this.#intents = intents
-        this.#appID = appID
+        this.#id = id
     }
 
-    get Emitter() { return this.#eventEmitter }
+    get Emitter() { return this.#guildEvents }
 
     /**
      * Connects messenger instance to gateway
      */
     Connect() {
-        this.#ws = new WebSocket(this.#wssURL)
+        this.#ws = new WebSocket(this.#url)
         this.#ws.addEventListener('error', (event) => { console.log(`gate error: ${event}`) })
         this.#ws.addEventListener('open', () => {
             console.log(`gate open`)
-            if (this.#ws.url === this.#wssURL) this.#Reset()
+            if (this.#ws.url === this.#url) this.#Reset()
             else this.#SendPayload(6)
         }, { once: true })
         this.#ws.addEventListener('message', (event) => {
@@ -84,26 +85,27 @@ export class Messenger {
                 : this.#ws.close(4017, 'invalid session: true')
 
             else if (payload.t === 'VOICE_STATE_UPDATE'
-                && payload.d.user_id === this.#appID
+                && payload.d.user_id === this.#id
                 && payload.d.channel_id) {
-                this.#privateEmitter.emit(BOT_VOICE_JOIN, payload.d.session_id)
+                this.#wsEvents.emit(BOT_VOICE_JOIN, payload.d.session_id)
             }
             else if (payload.t === 'VOICE_SERVER_UPDATE') {
-                this.#privateEmitter.emit(VOICE_GATE_INFO, payload.d)
+                this.#wsEvents.emit(VOICE_GATE_INFO, payload.d)
             }
 
             else {
-                this.#eventEmitter.emit(EVENT, payload)
+                this.#guildEvents.emit(EVENT, payload)
             }
         })
         this.#ws.addEventListener('close', (event) => {
+            console.log(`gate close: ${event}`)
             if (!event.code
                 || event.code >= 4000 && event.code <= 4003
                 || event.code >= 4005 && event.code <= 4009) {
                 this.Connect(this.#resume_gateway_url)
                 return
             }
-            this.#eventEmitter.emit(DEATH)
+            this.#guildEvents.emit(DEATH)
         })
     }
 
@@ -117,11 +119,11 @@ export class Messenger {
      */
     async JoinVoice(guildID, channelID, selfMute, selfDeaf) {
         let voiceSessionID
-        this.#privateEmitter.once(BOT_VOICE_JOIN, (session_id) => {
+        this.#wsEvents.once(BOT_VOICE_JOIN, (session_id) => {
             voiceSessionID = session_id
         })
         const promise = new Promise((resolve, reject) => {
-            this.#privateEmitter.once(VOICE_GATE_INFO, (info) => {
+            this.#wsEvents.once(VOICE_GATE_INFO, (info) => {
                 resolve({
                     token: info.token,
                     voice_session_id: voiceSessionID,
